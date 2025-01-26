@@ -1,0 +1,64 @@
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+public class Servidor {
+    public static void main(String[] args) throws IOException {
+        ServerSocket servidor = null;
+        Socket sc = null;
+        DataInputStream in;
+        DataOutputStream out;
+        int PUERTO = 5000;
+
+        try {
+            servidor = new ServerSocket(PUERTO);
+            System.out.println("Servidor iniciado");
+
+            while (true) {
+                sc = servidor.accept();
+                System.out.println("Cliente conectado");
+
+                in = new DataInputStream(sc.getInputStream());
+                out = new DataOutputStream(sc.getOutputStream());
+
+                boolean continuar = true;
+
+                while (continuar) {
+                    String mensaje = in.readUTF();
+                    System.out.println("Cliente dice: " + mensaje);
+
+                    switch (mensaje) {
+                        case "¿Quién es?":
+                            out.writeUTF("Soy yo");
+                            break;
+
+                        case "¿Qué vienes a buscar?":
+                            out.writeUTF("A ti");
+                            break;
+
+                        case "Ya es tarde":
+                            out.writeUTF("¿Por qué?");
+                            break;
+
+                        case "Porque ahora soy yo la que quiere estar sin ti":
+                            out.writeUTF("Por eso vete, olvida mi nombre, mi cara, mi casa y pega la vuelta");
+                            continuar = false; // Finaliza la conexión
+                            break;
+
+                        default:
+                            out.writeUTF("Error");
+                            break;
+                    }
+                }
+
+                System.out.println("Cliente desconectado");
+                sc.close();
+            }
+
+        } catch (IOException ex) {
+            System.out.println("Error: " + ex.getMessage());
+        }
+    }
+}

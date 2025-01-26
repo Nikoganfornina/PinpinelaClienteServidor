@@ -1,0 +1,43 @@
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
+import java.util.Scanner;
+
+public class Cliente {
+    public static void main(String[] args) throws IOException {
+        String HOST = "127.0.0.1";
+        int PUERTO = 5000;
+        DataInputStream in;
+        DataOutputStream out;
+        Scanner scanner = new Scanner(System.in);
+
+        try {
+            Socket sc = new Socket(HOST, PUERTO);
+
+            in = new DataInputStream(sc.getInputStream());
+            out = new DataOutputStream(sc.getOutputStream());
+
+            boolean continuar = true;
+
+            while (continuar) {
+                System.out.print("Escribe tu mensaje: ");
+                String mensajeCliente = scanner.nextLine();
+                out.writeUTF(mensajeCliente);
+
+                String respuesta = in.readUTF();
+                System.out.println("Servidor responde: " + respuesta);
+
+                if (respuesta.equals("Por eso vete, olvida mi nombre, mi cara, mi casa y pega la vuelta")) {
+                    continuar = false;
+                }
+            }
+
+            sc.close();
+            System.out.println("Cliente desconectado");
+
+        } catch (IOException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+}

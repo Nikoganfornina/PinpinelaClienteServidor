@@ -1,0 +1,48 @@
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+public class Main {
+    public static void main(String[] args) throws IOException {
+        ServerSocket servidor = null;
+        Socket sc = null;
+        DataInputStream in;
+        DataOutputStream out;
+        int PUERTO = 5000;
+
+        try {
+            servidor = new ServerSocket(PUERTO);
+            System.out.println("Servidor iniciado");
+
+            while (true) {
+                sc = servidor.accept();
+                System.out.println("CLIENTE CONECTADO");
+
+                in = new DataInputStream(sc.getInputStream());
+                out = new DataOutputStream(sc.getOutputStream());
+
+                String mensaje = in.readUTF();
+                System.out.println("Cliente dice: " + mensaje);
+
+                out.writeUTF("HOLA DESDE EL SERVIDOR");
+
+                mensaje = in.readUTF();
+                System.out.println("Cliente dice: " + mensaje);
+
+                if (mensaje.equalsIgnoreCase("Adiós")) {
+                    out.writeUTF("Adiós, cliente.");
+                } else {
+                    out.writeUTF("Mensaje no esperado");
+                }
+
+                sc.close(); // Cierra conexión del cliente
+                System.out.println("CLIENTE DESCONECTADO");
+            }
+
+        } catch (IOException ex) {
+            System.out.println("Error: " + ex.getMessage());
+        }
+    }
+}
